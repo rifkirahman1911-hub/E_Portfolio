@@ -1,0 +1,178 @@
+/* Import Font */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+:root {
+  --bg: #e0e5ec;
+  --text: #333;
+  --primary: #4a6cf7;
+
+  --shadow-light: #ffffff;
+  --shadow-dark: #babecc;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* ===========================
+   Container Box
+=========================== */
+.neu-card {
+  background: var(--bg);
+  padding: 35px 45px;
+  border-radius: 20px;
+  box-shadow: 
+    9px 9px 16px var(--shadow-dark),
+    -9px -9px 16px var(--shadow-light);
+}
+
+/* ===========================
+   Input Field
+=========================== */
+.neu-input {
+  width: 100%;
+  padding: 14px 18px;
+  margin: 15px 0;
+  border-radius: 12px;
+  border: none;
+  background: var(--bg);
+  font-size: 15px;
+
+  box-shadow:
+    inset 3px 3px 6px var(--shadow-dark),
+    inset -3px -3px 6px var(--shadow-light);
+}
+
+.neu-input:focus {
+  outline: none;
+  box-shadow:
+    inset 1px 1px 3px var(--shadow-dark),
+    inset -1px -1px 3px var(--shadow-light);
+}
+
+/* ===========================
+   Buttons
+=========================== */
+.neu-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--primary);
+
+  cursor: pointer;
+
+  box-shadow:
+    3px 3px 6px #c0c4d1,
+    -3px -3px 6px #ffffff;
+}
+
+.neu-btn:hover {
+  opacity: 0.95;
+}
+
+.neu-btn:active {
+  box-shadow:
+    inset 3px 3px 6px #c0c4d1,
+    inset -3px -3px 6px #ffffff;
+}
+
+/* ===========================
+   Titles
+=========================== */
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* ===========================
+   Dashboard Layout
+=========================== */
+
+.dashboard-container {
+  width: 95%;
+  max-width: 1100px;
+  margin: 40px auto;
+}
+
+.section-title {
+  font-size: 20px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.neu-box {
+  background: var(--bg);
+  padding: 25px;
+  border-radius: 18px;
+  margin-bottom: 25px;
+
+  box-shadow:
+    8px 8px 12px var(--shadow-dark),
+    -8px -8px 12px var(--shadow-light);
+}
+
+/* Project Items */
+.item-card {
+  background: var(--bg);
+  padding: 18px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  box-shadow:
+    4px 4px 7px var(--shadow-dark),
+    -4px -4px 7px var(--shadow-light);
+}
+
+.delete-btn {
+  background: #e74c3c;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: none;
+
+  box-shadow:
+    2px 2px 3px var(--shadow-dark),
+    -2px -2px 3px var(--shadow-light);
+}
+
+.delete-btn:active {
+  box-shadow:
+    inset 2px 2px 3px var(--shadow-dark),
+    inset -2px -2px 3px var(--shadow-light);
+}
+
+/* ===========================
+   Mobile Responsive
+=========================== */
+@media (max-width: 768px) {
+  .neu-card {
+    width: 90%;
+    padding: 25px;
+  }
+
+  .dashboard-container {
+    width: 92%;
+  }
+}

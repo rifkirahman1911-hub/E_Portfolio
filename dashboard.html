@@ -1,0 +1,360 @@
+<!-- dashboard.html (FULL) -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard - E-Portfolio (Full)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    /* small tweaks for full dashboard layout */
+    .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px; }
+    .controls { display:flex; gap:8px; align-items:center; }
+    .two-col { display:grid; grid-template-columns: 2fr 1fr; gap:16px; }
+    @media (max-width:900px) { .two-col { grid-template-columns: 1fr; } }
+    .sub-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
+    .small { font-size:13px; color:#666; }
+    .chip { display:inline-block; padding:6px 10px; border-radius:999px; background:var(--bg); box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light); margin-right:6px; margin-bottom:6px; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="header">
+      <div>
+        <h1 style="margin:0">E-Portfolio — Dashboard</h1>
+        <div class="small">Manage profile, projects, certificates, assessments, and generate CV</div>
+      </div>
+
+      <div class="controls">
+        <button id="createShareBtn" class="neu-btn">Generate Share Link</button>
+        <button id="logoutBtn" class="neu-btn">Logout</button>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- left column (main) -->
+      <div>
+        <!-- PROFILE CARD -->
+        <div class="neu-box">
+          <h3 class="section-title">Profile</h3>
+          <div id="profileArea">Loading profile...</div>
+
+          <div style="margin-top:12px;">
+            <button id="editProfile" class="neu-btn" style="width:auto;padding:8px 12px">Edit Profile</button>
+          </div>
+        </div>
+
+        <!-- PROJECTS -->
+        <div class="neu-box">
+          <h3 class="section-title">Projects & Tasks</h3>
+
+          <div class="sub-grid">
+            <div>
+              <input id="proj_title" class="neu-input" placeholder="Project title">
+              <select id="proj_type" class="neu-input">
+                <option value="Final Project">Final Project</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Daily">Daily</option>
+                <option value="Case Study">Case Study</option>
+                <option value="Group Project">Group Project</option>
+              </select>
+              <input id="proj_demo" class="neu-input" placeholder="Demo link (URL)">
+            </div>
+            <div>
+              <textarea id="proj_desc" class="neu-input" placeholder="Description" style="height:120px"></textarea>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button id="addProjBtn" class="neu-btn">Add Project</button>
+                <button id="clearProjBtn" class="neu-btn" style="background:#9aa6ff">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <h4 style="margin-top:16px">Your Projects</h4>
+          <div id="projectsList">Loading...</div>
+        </div>
+
+        <!-- CERTIFICATES -->
+        <div class="neu-box">
+          <h3 class="section-title">Certificates</h3>
+
+          <div class="sub-grid">
+            <div>
+              <input id="cert_name" class="neu-input" placeholder="Certificate name">
+              <input id="cert_issuer" class="neu-input" placeholder="Issuer">
+            </div>
+            <div>
+              <input id="cert_date" class="neu-input" type="date">
+              <input id="cert_file" class="neu-input" placeholder="File URL (optional)">
+            </div>
+          </div>
+
+          <div style="margin-top:8px">
+            <button id="addCertBtn" class="neu-btn">Add Certificate</button>
+          </div>
+
+          <h4 style="margin-top:16px">Your Certificates</h4>
+          <div id="certsList">Loading...</div>
+        </div>
+
+        <!-- ASSESSMENTS -->
+        <div class="neu-box">
+          <h3 class="section-title">Assessments</h3>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input id="assess_skill" class="neu-input" placeholder="Skill / Category" style="flex:1;min-width:160px">
+            <input id="assess_score" class="neu-input" placeholder="Score (0-100)" style="width:140px">
+            <input id="assess_eval" class="neu-input" placeholder="Evaluator (mentor)" style="width:180px">
+            <button id="addAssessBtn" class="neu-btn" style="height:44px">Add</button>
+          </div>
+
+          <h4 style="margin-top:14px">Your Assessments</h4>
+          <div id="assessList">Loading...</div>
+        </div>
+
+      </div>
+
+      <!-- right column (side) -->
+      <div>
+        <div class="neu-box">
+          <h3 class="section-title">Quick Profile Edit</h3>
+          <input id="quick_name" class="neu-input" placeholder="Full name">
+          <input id="quick_phone" class="neu-input" placeholder="Phone">
+          <textarea id="quick_bio" class="neu-input" placeholder="Short bio" style="height:100px"></textarea>
+          <input id="quick_skills" class="neu-input" placeholder="Skills (comma separated)">
+          <input id="quick_interests" class="neu-input" placeholder="Interests (comma separated)">
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="saveQuickProfile" class="neu-btn">Save</button>
+            <button id="refreshBtn" class="neu-btn" style="background:#9aa6ff">Refresh</button>
+          </div>
+        </div>
+
+        <div class="neu-box">
+          <h3 class="section-title">CV & Share</h3>
+          <button id="generateCv" class="neu-btn">Generate CV</button>
+          <div style="margin-top:12px">
+            <small class="small">Shareable link (public):</small>
+            <div id="shareLink" class="small" style="word-break:break-all;margin-top:6px"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import {
+      checkLogin, logout, getProfile, updateProfile,
+      addProject, getProjects, deleteProject, updateProject,
+      addCertificate, getCertificates, deleteCertificate,
+      addAssessment, getAssessments, deleteAssessment,
+      createPortfolioLink, generateCV
+    } from './main.js';
+
+    // --- ensure logged in ---
+    const sess = await checkLogin();
+    if (!sess.loggedIn) {
+      alert('Silakan login terlebih dahulu');
+      window.location.href = 'index.html';
+      throw new Error('not logged in');
+    }
+
+    // UI elements
+    const logoutBtn = document.getElementById('logoutBtn');
+    const profileArea = document.getElementById('profileArea');
+
+    // load profile
+    async function loadProfile(){
+      const p = await getProfile();
+      if (!p) {
+        profileArea.innerHTML = '<i>No profile</i>';
+        return;
+      }
+      profileArea.innerHTML = `
+        <strong style="font-size:18px">${p.full_name || '(no name)'}</strong>
+        <div class="small">${p.email || ''}</div>
+        <div style="margin-top:8px">${p.bio || ''}</div>
+        <div style="margin-top:8px">
+          <div class="small">Skills:</div>
+          ${(p.skills || []).map(s=>`<span class="chip">${s}</span>`).join(' ')}
+        </div>
+        <div style="margin-top:6px">
+          <div class="small">Interests:</div>
+          ${(p.interests || []).map(i=>`<span class="chip">${i}</span>`).join(' ')}
+        </div>
+      `;
+      // fill quick fields
+      quick_name.value = p.full_name || '';
+      quick_phone.value = p.phone || '';
+      quick_bio.value = p.bio || '';
+      quick_skills.value = (p.skills || []).join(', ');
+      quick_interests.value = (p.interests || []).join(', ');
+    }
+
+    // logout
+    logoutBtn.addEventListener('click', async () => {
+      await logout();
+      window.location.href = 'index.html';
+    });
+
+    // ---------- PROJECTS ----------
+    async function loadProjects(){
+      const list = await getProjects();
+      const el = document.getElementById('projectsList');
+      if (!list || list.length === 0) { el.innerHTML = '<i>No projects</i>'; return; }
+      el.innerHTML = list.map(p => `
+        <div class="item-card">
+          <div>
+            <strong>${p.title}</strong><br>
+            <small>${p.project_type || ''} • ${new Date(p.created_at).toLocaleDateString()}</small>
+            <div style="margin-top:6px">${p.description || ''}</div>
+            ${p.demo_link ? `<div style="margin-top:6px"><a href="${p.demo_link}" target="_blank">${p.demo_link}</a></div>` : ''}
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button onclick="window.editProject('${p.id}')" class="neu-btn" style="width:110px">Edit</button>
+            <button onclick="window.removeProject('${p.id}')" class="delete-btn" style="width:110px">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.removeProject = async (id) => {
+      if (!confirm('Hapus project?')) return;
+      const r = await deleteProject(id);
+      if (!r.success) return alert('Error: '+ r.error);
+      await loadProjects();
+    };
+
+    window.editProject = async (id) => {
+      const title = prompt('New title');
+      if (!title) return;
+      const desc = prompt('New description', '');
+      const type = prompt('Type (Final Project/Weekly/Daily/Case Study/Group Project)', 'Weekly');
+      const res = await updateProject(id, title, desc, type);
+      if (!res.success) return alert('Error: ' + res.error);
+      await loadProjects();
+    };
+
+    addProjBtn.addEventListener('click', async () => {
+      const title = proj_title.value.trim();
+      if (!title) return alert('Masukkan judul project');
+      const res = await addProject(title, proj_desc.value, proj_type.value, proj_demo.value);
+      if (!res.success) return alert('Error: ' + res.error);
+      proj_title.value=''; proj_desc.value=''; proj_demo.value='';
+      await loadProjects();
+    });
+
+    clearProjBtn.addEventListener('click', () => {
+      proj_title.value=''; proj_desc.value=''; proj_demo.value='';
+    });
+
+    // ---------- CERTIFICATES ----------
+    async function loadCerts(){
+      const list = await getCertificates();
+      const el = document.getElementById('certsList');
+      if (!list || list.length === 0) { el.innerHTML = '<i>No certificates</i>'; return; }
+      el.innerHTML = list.map(c=>`
+        <div class="item-card">
+          <div>
+            <strong>${c.name}</strong><br>
+            <small>${c.issuer || ''} ${c.issued_date ? ' • '+c.issued_date : ''}</small>
+            ${c.file_url ? `<div style="margin-top:6px"><a href="${c.file_url}" target="_blank">View file</a></div>` : ''}
+          </div>
+          <div>
+            <button class="delete-btn" onclick="window.removeCert('${c.id}')">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.removeCert = async (id) => {
+      if (!confirm('Hapus sertifikat?')) return;
+      const r = await deleteCertificate(id);
+      if (!r.success) return alert('Error: ' + r.error);
+      await loadCerts();
+    };
+
+    addCertBtn.addEventListener('click', async () => {
+      if (!cert_name.value.trim()) return alert('Nama sertifikat dibutuhkan');
+      const res = await addCertificate(cert_name.value, cert_issuer.value || null, cert_date.value || null, cert_file.value || null);
+      if (!res.success) return alert('Error: ' + res.error);
+      cert_name.value=''; cert_issuer.value=''; cert_date.value=''; cert_file.value='';
+      await loadCerts();
+    });
+
+    // ---------- ASSESSMENTS ----------
+    async function loadAssess(){
+      const list = await getAssessments();
+      const el = document.getElementById('assessList');
+      if (!list || list.length===0) { el.innerHTML = '<i>No assessments</i>'; return; }
+      el.innerHTML = list.map(a=>`
+        <div class="item-card">
+          <div>
+            <strong>${a.skill_name}</strong><br>
+            <small>Score: ${a.score} ${a.evaluator ? ' • '+a.evaluator : ''}</small>
+            <div style="margin-top:6px">${a.notes || ''}</div>
+          </div>
+          <div>
+            <button class="delete-btn" onclick="window.removeAssess('${a.id}')">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.removeAssess = async (id) => {
+      if (!confirm('Delete assessment?')) return;
+      const r = await deleteAssessment(id);
+      if (!r.success) return alert('Error: '+r.error);
+      await loadAssess();
+    };
+
+    addAssessBtn.addEventListener('click', async () => {
+      const skill = assess_skill.value.trim();
+      const score = parseInt(assess_score.value,10);
+      if (!skill || isNaN(score)) return alert('Isi skill dan score (angka)');
+      const res = await addAssessment(skill, score, assess_eval.value || '');
+      if (!res.success) return alert('Error: ' + res.error);
+      assess_skill.value=''; assess_score.value=''; assess_eval.value='';
+      await loadAssess();
+    });
+
+    // ---------- QUICK PROFILE SAVE ----------
+    saveQuickProfile.addEventListener('click', async () => {
+      const skillsArr = quick_skills.value.split(',').map(s=>s.trim()).filter(Boolean);
+      const interestsArr = quick_interests.value.split(',').map(s=>s.trim()).filter(Boolean);
+      const r = await updateProfile(quick_name.value, quick_phone.value, quick_bio.value, skillsArr, interestsArr);
+      if (!r.success) return alert('Error: ' + r.error);
+      await loadProfile();
+      alert('Profile updated');
+    });
+
+    refreshBtn.addEventListener('click', async () => {
+      await loadProfile(); await loadProjects(); await loadCerts(); await loadAssess();
+    });
+
+    // ---------- SHARE LINK ----------
+    createShareBtn.addEventListener('click', async () => {
+      const res = await createPortfolioLink();
+      if (!res.success) return alert('Error: ' + res.error);
+      shareLink.textContent = res.url;
+      // show copy prompt
+      if (confirm('Share link created. Copy to clipboard?')) {
+        navigator.clipboard.writeText(res.url).catch(()=>{});
+        alert('Link copied to clipboard (if browser allowed).');
+      }
+    });
+
+    // ---------- CV ----------
+    generateCv.addEventListener('click', async () => {
+      const r = await generateCV();
+      if (!r.success) alert('Failed: ' + (r.error || 'unknown'));
+    });
+
+    // initial load
+    await loadProfile();
+    await loadProjects();
+    await loadCerts();
+    await loadAssess();
+
+  </script>
+</body>
+</html>
