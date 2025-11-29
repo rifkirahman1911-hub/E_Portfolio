@@ -1,359 +1,738 @@
-<!-- dashboard.html (FULL) -->
 <!doctype html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="utf-8">
-  <title>Dashboard - E-Portfolio (Full)</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="stylesheet" href="assets/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard - Vinix7</title>
   <style>
-    /* small tweaks for full dashboard layout */
-    .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px; }
-    .controls { display:flex; gap:8px; align-items:center; }
-    .two-col { display:grid; grid-template-columns: 2fr 1fr; gap:16px; }
-    @media (max-width:900px) { .two-col { grid-template-columns: 1fr; } }
-    .sub-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px; }
-    .small { font-size:13px; color:#666; }
-    .chip { display:inline-block; padding:6px 10px; border-radius:999px; background:var(--bg); box-shadow: 3px 3px 6px var(--shadow-dark), -3px -3px 6px var(--shadow-light); margin-right:6px; margin-bottom:6px; }
+    /* Minimal, clean styles mengikuti layout contoh gambar */
+    :root{
+      --blue:#163b8f;
+      --muted:#f3f4f6;
+      --card:#ffffff;
+      --gray:#6b7280;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    body{margin:0;background:#fafafa;color:#111;}
+    header{display:flex;align-items:center;justify-content:space-between;padding:12px 28px;background:#fff;border-bottom:1px solid #eee;position:sticky;top:0;z-index:10;}
+    header .brand{font-weight:700;color:var(--blue);display:flex;align-items:center;gap:12px}
+    header .brand img{width:120px;display:block}
+    nav{display:flex;align-items:center;gap:12px}
+    nav a, nav button.page-btn{margin-left:6px;padding:8px 12px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#111;text-decoration:none;font-weight:600;cursor:pointer}
+    nav button.page-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+    .container{max-width:1100px;margin:28px auto;padding:0 20px;}
+    .top-card{display:flex;gap:20px;align-items:center;background:#fff;padding:22px;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+    .avatar{width:96px;height:96px;border-radius:50%;overflow:hidden;border:4px solid #f1f5f9;flex:0 0 96px}
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+    .profile-info h1{margin:0;font-size:22px;}
+    .profile-info .role{color:var(--gray);margin-top:6px;}
+    .edit-btn{margin-top:12px;padding:8px 14px;border-radius:8px;background:transparent;border:1px solid #ddd;cursor:pointer;}
+    .progress{margin-top:14px;background:var(--muted);height:10px;border-radius:999px;overflow:hidden;width:320px}
+    .progress .bar{height:100%;background:var(--blue);width:70%}
+    .main-grid{display:grid;grid-template-columns:1fr 360px;gap:20px;margin-top:20px}
+    .card{background:#fff;padding:18px;border-radius:10px;box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+    .skills {display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .tag{background:#fff3c4;padding:6px 10px;border-radius:999px;font-weight:600;font-size:13px}
+    .logo { width:120px; }
+    input, textarea, select { width:100%; padding:10px; border-radius:8px; border:1px solid #e5e7eb; box-sizing:border-box; font-size:14px }
+    label { display:block; font-weight:600; margin-bottom:6px; color:#111; }
+    .form-row { display:flex; gap:12px }
+    .form-row > * { flex:1 }
+    .muted { color:var(--gray); font-size:14px }
+    .btn { display:inline-block; padding:10px 16px; border-radius:8px; background:var(--blue); color:#fff; text-decoration:none; font-weight:600; border:none; cursor:pointer; }
+    .btn.ghost { background:#fff; color:#111; border:1px solid #ddd; }
+    /* small responsive */
+    @media (max-width:900px){
+      .main-grid{grid-template-columns:1fr}
+      header{padding:10px}
+      nav{flex-wrap:wrap}
+    }
+
+    /* hide right column (you requested) */
+    aside { display: none !important; }
+    .main-grid { grid-template-columns: 1fr !important; }
+
+    /* --- Showcase / Portfolio styling --- */
+    #portfolio-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-top:12px; }
+    .portfolio-item {
+      background: #fff;
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .portfolio-thumb { height:120px; border-radius:8px; background-size:cover; background-position:center; }
+    .portfolio-title { font-weight:700; }
+    .portfolio-desc { color:var(--gray); font-size:14px; }
+    /* CV popup */
+    .premium-popup { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:9999;}
+    .premium-card { background:white; width:92%; max-width:720px; border-radius:12px; padding:20px; box-shadow:0 8px 30px rgba(0,0,0,0.2); }
+    .plans { display:flex; gap:12px; margin-top:12px; flex-wrap:wrap; }
+    .plan { flex:1; min-width:180px; border-radius:10px; padding:12px; border:1px solid #e6e6e6; background:#fff; cursor:pointer; }
+    .plan.selected { border-color: var(--blue); box-shadow: 0 4px 14px rgba(22,59,143,0.08); background: #f6f8ff; }
+    .plan .price { font-weight:700; margin-top:8px; display:block; }
+    .popup-actions { margin-top:16px; text-align:right; }
+    .pay-btn { background:var(--blue); color:white; padding:10px 14px; border-radius:10px; border:none; cursor:pointer; }
+
+    /* activity item small style */
+    #activity-list li { margin-bottom:8px; font-size:14px; color: #374151; }
+    #activity-list li .time { color:var(--gray); font-size:12px; display:block; margin-top:4px; }
   </style>
 </head>
 <body>
-  <div class="dashboard-container">
-    <div class="header">
-      <div>
-        <h1 style="margin:0">E-Portfolio — Dashboard</h1>
-        <div class="small">Manage profile, projects, certificates, assessments, and generate CV</div>
+  <header>
+    <div class="brand">
+      <img src="vinix71.jpg" alt="VINIX7 Logo" class="logo">
+    </div>
+
+    <nav id="top-nav">
+      <button class="page-btn active" id="nav-home-btn">Home</button>
+      <button class="page-btn" id="nav-projects-btn">Projects</button>
+      <button class="page-btn" id="nav-skill-btn">Skill Passport</button>
+      <button class="page-btn" id="nav-showcase-btn">Showcase</button>
+
+      <img id="header-avatar" src="assets/default-profile.png" alt="avatar" style="width:36px;height:36px;border-radius:50%;object-fit:cover;margin-left:12px;border:1px solid #e5e7eb">
+
+      <button id="btn-logout" style="margin-left:8px;padding:6px 10px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">Logout</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- PROFILE CARD -->
+    <div class="top-card">
+      <div class="avatar" id="avatar-container">
+        <img src="" alt="avatar" id="avatar-img" onerror="this.src='assets/default-profile.png'">
+      </div>
+      <div class="profile-info" style="flex:1">
+        <h1 id="profile-name">Loading...</h1>
+        <div class="role" id="profile-role">—</div>
+        <button class="edit-btn" id="edit-profile">Edit Profil</button>
+        <div class="progress">
+          <div class="bar" id="progress-bar" style="width:0%"></div>
+        </div>
+        <div style="color:#6b7280;font-size:13px;margin-top:8px" id="profile-bio">—</div>
       </div>
 
-      <div class="controls">
-        <button id="createShareBtn" class="neu-btn">Generate Share Link</button>
-        <button id="logoutBtn" class="neu-btn">Logout</button>
+      <div style="margin-left:auto;">
+        <div style="text-align:right">
+          <div style="font-weight:700" id="profile-percent">0% Selesai</div>
+          <div style="color:var(--gray);font-size:13px">Tingkatkan profil untuk visibilitas</div>
+        </div>
       </div>
     </div>
 
-    <div class="two-col">
-      <!-- left column (main) -->
-      <div>
-        <!-- PROFILE CARD -->
-        <div class="neu-box">
-          <h3 class="section-title">Profile</h3>
-          <div id="profileArea">Loading profile...</div>
+    <div class="main-grid">
+      <!-- LEFT -->
+      <div id="left-column">
 
-          <div style="margin-top:12px;">
-            <button id="editProfile" class="neu-btn" style="width:auto;padding:8px 12px">Edit Profile</button>
-          </div>
+        <!-- HOME -->
+        <div id="page-home" class="card">
+          <h3>Halo, <span id="greet-name">—</span></h3>
+          <p id="home-intro">Ini ringkasan profilmu.</p>
+
+          <h4 style="margin-top:14px">Aktivitas Terbaru</h4>
+          <ul id="activity-list" style="padding-left:18px;color:var(--gray);"></ul>
         </div>
 
         <!-- PROJECTS -->
-        <div class="neu-box">
-          <h3 class="section-title">Projects & Tasks</h3>
+        <div id="page-projects" class="card" style="display:none;">
+          <h3>Upload Your New Project</h3>
+          <p class="muted">Tambahkan karya baru ke skill passport digital anda.</p>
 
-          <div class="sub-grid">
-            <div>
-              <input id="proj_title" class="neu-input" placeholder="Project title">
-              <select id="proj_type" class="neu-input">
-                <option value="Final Project">Final Project</option>
-                <option value="Weekly">Weekly</option>
-                <option value="Daily">Daily</option>
-                <option value="Case Study">Case Study</option>
-                <option value="Group Project">Group Project</option>
-              </select>
-              <input id="proj_demo" class="neu-input" placeholder="Demo link (URL)">
-            </div>
-            <div>
-              <textarea id="proj_desc" class="neu-input" placeholder="Description" style="height:120px"></textarea>
-              <div style="display:flex;gap:8px;margin-top:8px">
-                <button id="addProjBtn" class="neu-btn">Add Project</button>
-                <button id="clearProjBtn" class="neu-btn" style="background:#9aa6ff">Clear</button>
+          <div style="margin-top:16px; display:grid; gap:12px">
+            <div style="display:flex;gap:12px;flex-wrap:wrap">
+              <div style="flex:1;min-width:260px">
+                <label>Unggah Project Anda</label>
+                <div style="border:1px dashed #e5e7eb;padding:18px;border-radius:8px;text-align:center;background:#fff;">
+                  <input id="proj_file" type="file" accept=".png,.jpg,.jpeg,.pdf,.mp4,.mp3">
+                  <small class="muted">Support: JPG, PNG, MP4, PDF. Max 100MB</small>
+                </div>
+              </div>
+
+              <div style="flex:1;min-width:260px">
+                <label for="proj_title">Nama Project</label>
+                <input id="proj_title">
+
+                <label style="margin-top:8px">Deskripsi</label>
+                <textarea id="proj_desc" rows="4"></textarea>
+
+                <label style="margin-top:8px">Tautan</label>
+                <input id="proj_demo">
+
+                <label style="margin-top:8px">Kategori</label>
+                <select id="proj_type">
+                  <option value="Design">Design</option>
+                  <option value="Foto/Video">Foto/Video</option>
+                  <option value="Lainnya">Lainnya</option>
+                </select>
+
+                <div style="display:flex;gap:8px;margin-top:12px">
+                  <button id="addProjBtn" class="btn">Kirim Project</button>
+                  <button id="clearProjBtn" class="btn ghost">Bersihkan</button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <h4 style="margin-top:16px">Your Projects</h4>
-          <div id="projectsList">Loading...</div>
-        </div>
-
-        <!-- CERTIFICATES -->
-        <div class="neu-box">
-          <h3 class="section-title">Certificates</h3>
-
-          <div class="sub-grid">
             <div>
-              <input id="cert_name" class="neu-input" placeholder="Certificate name">
-              <input id="cert_issuer" class="neu-input" placeholder="Issuer">
-            </div>
-            <div>
-              <input id="cert_date" class="neu-input" type="date">
-              <input id="cert_file" class="neu-input" placeholder="File URL (optional)">
+              <h4>Daftar Project</h4>
+              <div id="projectsList" style="display:grid;gap:8px;margin-top:8px"></div>
             </div>
           </div>
-
-          <div style="margin-top:8px">
-            <button id="addCertBtn" class="neu-btn">Add Certificate</button>
-          </div>
-
-          <h4 style="margin-top:16px">Your Certificates</h4>
-          <div id="certsList">Loading...</div>
         </div>
 
-        <!-- ASSESSMENTS -->
-        <div class="neu-box">
-          <h3 class="section-title">Assessments</h3>
+        <!-- SKILL -->
+        <div id="page-skill" class="card" style="display:none;">
+          <h3>Skill Passport</h3>
+          <p style="color:var(--gray)">Kurasi kompetensimu.</p>
+          <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap">
+            <div style="flex:1;min-width:180px" class="card">
+              <strong>Technical Skills</strong>
+              <div class="skills" id="tech-skills"></div>
+            </div>
+            <div style="flex:1;min-width:180px" class="card">
+              <strong>Design Skills</strong>
+              <div class="skills" id="design-skills"></div>
+            </div>
+            <div style="flex:1;min-width:180px" class="card">
+              <strong>Soft Skills</strong>
+              <div class="skills" id="soft-skills"></div>
+            </div>
+          </div>
+        </div>
 
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <input id="assess_skill" class="neu-input" placeholder="Skill / Category" style="flex:1;min-width:160px">
-            <input id="assess_score" class="neu-input" placeholder="Score (0-100)" style="width:140px">
-            <input id="assess_eval" class="neu-input" placeholder="Evaluator (mentor)" style="width:180px">
-            <button id="addAssessBtn" class="neu-btn" style="height:44px">Add</button>
+        <!-- SHOWCASE -->
+        <div id="page-showcase" class="card" style="display:none;">
+          <h3>Showcase / Portofolio</h3>
+          <p style="color:var(--gray)">Kumpulan pekerjaan kamu.</p>
+
+          <!-- Skill passport preview (from profile) -->
+          <div id="showcase-skills" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px"></div>
+
+          <!-- Portfolio grid from projects -->
+          <div id="portfolio-grid"></div>
+
+          <!-- CV Generator placed at the bottom of showcase -->
+          <div style="margin-top:28px;border-top:1px solid #eee;padding-top:18px">
+            <h3>Generate CV Otomatis <small style="color:var(--gray)">🔒 Premium</small></h3>
+            <p style="color:var(--gray)">Dapatkan ringkasan CV profesional otomatis berdasarkan profil dan showcase.</p>
+            <div style="display:flex;gap:12px;align-items:center">
+              <button id="openCvPopup" class="btn">Generate CV</button>
+              <small style="color:var(--gray)">Atau pesan via WhatsApp</small>
+              <a href="https://wa.me/6281316960245?text=Hai,%20saya%20mau%20pesan%20CV%20Generator%20dong!" target="_blank" class="btn ghost">Pesan via WhatsApp</a>
+            </div>
           </div>
 
-          <h4 style="margin-top:14px">Your Assessments</h4>
-          <div id="assessList">Loading...</div>
         </div>
 
       </div>
 
-      <!-- right column (side) -->
-      <div>
-        <div class="neu-box">
-          <h3 class="section-title">Quick Profile Edit</h3>
-          <input id="quick_name" class="neu-input" placeholder="Full name">
-          <input id="quick_phone" class="neu-input" placeholder="Phone">
-          <textarea id="quick_bio" class="neu-input" placeholder="Short bio" style="height:100px"></textarea>
-          <input id="quick_skills" class="neu-input" placeholder="Skills (comma separated)">
-          <input id="quick_interests" class="neu-input" placeholder="Interests (comma separated)">
-          <div style="display:flex;gap:8px;margin-top:8px">
-            <button id="saveQuickProfile" class="neu-btn">Save</button>
-            <button id="refreshBtn" class="neu-btn" style="background:#9aa6ff">Refresh</button>
-          </div>
-        </div>
-
-        <div class="neu-box">
-          <h3 class="section-title">CV & Share</h3>
-          <button id="generateCv" class="neu-btn">Generate CV</button>
+      <!-- RIGHT (hidden with CSS) -->
+      <aside>
+        <div class="card">
+          <strong>Ringkasan</strong>
           <div style="margin-top:12px">
-            <small class="small">Shareable link (public):</small>
-            <div id="shareLink" class="small" style="word-break:break-all;margin-top:6px"></div>
+            <div><strong>Nama</strong><div id="right-name" style="color:var(--gray);margin-top:6px"></div></div>
+            <div style="margin-top:8px"><strong>Bio</strong><div id="right-bio" style="color:var(--gray);margin-top:6px"></div></div>
+            <div style="margin-top:8px"><strong>Skills</strong>
+              <div class="skills" id="right-skills" style="margin-top:8px"></div>
+            </div>
           </div>
         </div>
 
+        <div class="card" style="margin-top:12px">
+          <strong>Quick Actions</strong>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button id="add-project" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer">Tambah Proyek</button>
+            <button id="edit-profile-2" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer">Edit Profil</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- CV Premium popup -->
+  <div class="premium-popup" id="premiumPopup">
+    <div class="premium-card" role="dialog" aria-modal="true">
+      <h3>Tingkatkan Peluang Karir Anda</h3>
+      <p style="color:var(--gray)">Pilih paket generate CV otomatis yang paling sesuai dengan Anda</p>
+
+      <div class="plans">
+        <div class="plan" data-plan="basic">
+          <div>Basic</div>
+          <div class="price">Rp. 15.000</div>
+          <div style="color:var(--gray);font-size:13px">2x generate • download PDF</div>
+        </div>
+
+        <div class="plan selected" data-plan="pro">
+          <div>Pro</div>
+          <div class="price">Rp. 50.000</div>
+          <div style="color:var(--gray);font-size:13px">30 Hari • semua template</div>
+        </div>
+
+        <div class="plan" data-plan="ultimate">
+          <div>Ultimate</div>
+          <div class="price">Rp. 70.000</div>
+          <div style="color:var(--gray);font-size:13px">2 Bulan • premium</div>
+        </div>
+      </div>
+
+      <div class="popup-actions">
+        <button id="closePopup" class="btn ghost">Batal</button>
+        <button id="confirmPay" class="pay-btn">Lanjutkan ke Pembayaran</button>
       </div>
     </div>
   </div>
 
+  <!-- JS: inline, single-file. Uses supabase-js from CDN so kamu tidak perlu file lain. -->
   <script type="module">
-    import {
-      checkLogin, logout, getProfile, updateProfile,
-      addProject, getProjects, deleteProject, updateProject,
-      addCertificate, getCertificates, deleteCertificate,
-      addAssessment, getAssessments, deleteAssessment,
-      createPortfolioLink, generateCV
-    } from './main.js';
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-    // --- ensure logged in ---
-    const sess = await checkLogin();
-    if (!sess.loggedIn) {
-      alert('Silakan login terlebih dahulu');
-      window.location.href = 'index.html';
-      throw new Error('not logged in');
+    // ---------- GANTI INI DENGAN KONFIG SUPABASE MU ----------
+    const SUPABASE_URL = 'https://khirppcahtjmagaacxjb.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtoaXJwcGNhaHRqbWFnYWFjeGpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MjYxMjEsImV4cCI6MjA3OTMwMjEyMX0.XxjXQcYf-SYfrprCDyXxZmCpjq3m7Ci8v1w5cxNwpfE';
+    // -------------------------------------------------------
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    /* -------------------- HELPERS -------------------- */
+    const $ = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
+
+    function escapeHtml(s){
+      if(!s) return '';
+      return String(s)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#39;");
+    }
+    function escapeAttr(s){
+      if(!s) return '';
+      return String(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
-    // UI elements
-    const logoutBtn = document.getElementById('logoutBtn');
-    const profileArea = document.getElementById('profileArea');
+    /* -------------------- DOM refs -------------------- */
+    const navHomeBtn = $('#nav-home-btn');
+    const navProjectsBtn = $('#nav-projects-btn');
+    const navSkillBtn = $('#nav-skill-btn');
+    const navShowcaseBtn = $('#nav-showcase-btn');
 
-    // load profile
-    async function loadProfile(){
-      const p = await getProfile();
-      if (!p) {
-        profileArea.innerHTML = '<i>No profile</i>';
+    const pageHome = $('#page-home');
+    const pageProjects = $('#page-projects');
+    const pageSkill = $('#page-skill');
+    const pageShowcase = $('#page-showcase');
+
+    const avatarImg = $('#avatar-img');
+    const headerAvatar = $('#header-avatar');
+    const profileName = $('#profile-name');
+    const profileRole = $('#profile-role');
+    const profileBio = $('#profile-bio');
+    const greetName = $('#greet-name');
+    const rightName = $('#right-name');
+    const rightBio = $('#right-bio');
+    const rightSkills = $('#right-skills');
+
+    const techSkills = $('#tech-skills');
+    const designSkills = $('#design-skills');
+    const softSkills = $('#soft-skills');
+
+    const activityList = $('#activity-list');
+    const portfolioGrid = $('#portfolio-grid');
+    const projectsList = $('#projectsList');
+    const showcaseSkills = $('#showcase-skills');
+
+    const progressBar = $('#progress-bar');
+    const profilePercent = $('#profile-percent');
+    const homeIntro = $('#home-intro');
+
+    const addProjBtn = $('#addProjBtn');
+    const clearProjBtn = $('#clearProjBtn');
+
+    const proj_title = $('#proj_title');
+    const proj_desc = $('#proj_desc');
+    const proj_demo = $('#proj_demo');
+    const proj_type = $('#proj_type');
+    const proj_file = $('#proj_file');
+
+    const openCvPopup = $('#openCvPopup');
+    const premiumPopup = $('#premiumPopup');
+    const planEls = document.querySelectorAll('.plan');
+    const closePopup = $('#closePopup');
+    const confirmPay = $('#confirmPay');
+
+    let selectedPlan = 'pro';
+
+    /* -------------------- NAV helpers -------------------- */
+    function clearActiveNav() { $$('.page-btn').forEach(b=>b.classList.remove('active')); }
+    function showOnly(el){ [pageHome,pageProjects,pageSkill,pageShowcase].forEach(p=>p.style.display='none'); el.style.display='block'; }
+
+    navHomeBtn.onclick = ()=>{ clearActiveNav(); navHomeBtn.classList.add('active'); showOnly(pageHome); };
+    navProjectsBtn.onclick = ()=>{ clearActiveNav(); navProjectsBtn.classList.add('active'); showOnly(pageProjects); };
+    navSkillBtn.onclick = ()=>{ clearActiveNav(); navSkillBtn.classList.add('active'); showOnly(pageSkill); };
+    navShowcaseBtn.onclick = ()=>{ clearActiveNav(); navShowcaseBtn.classList.add('active'); showOnly(pageShowcase); };
+
+    $('#btn-logout').onclick = async ()=>{
+      await supabase.auth.signOut();
+      // log activity for logout (best-effort)
+      try {
+        const user = (await supabase.auth.getUser()).data.user;
+        if(user) await logActivity(user.id, 'Logout');
+      } catch(e){ /* ignore */ }
+      window.location.href = "/index.html";
+    };
+
+    /* -------------------- ACTIVITY LOG FUNCTIONS -------------------- */
+    async function logActivity(uid, action){
+      if(!uid) return;
+      try {
+        await supabase.from("activity_logs").insert([{
+          user_id: uid,
+          action: action,
+          created_at: new Date().toISOString()
+        }]);
+      } catch(err){
+        console.error("Gagal log activity:", err);
+      }
+    }
+
+    async function loadActivity(uid){
+      try {
+        const { data, error } = await supabase
+          .from("activity_logs")
+          .select("id, action, created_at")
+          .eq("user_id", uid)
+          .order("created_at", { ascending: false })
+          .limit(10);
+
+        if (error) {
+          console.error("Load activity error:", error);
+          return;
+        }
+
+        activityList.innerHTML = "";
+        if(!data || data.length === 0){
+          activityList.innerHTML = "<li style='color:var(--gray)'>Belum ada aktivitas</li>";
+          return;
+        }
+
+        data.forEach(a=>{
+          const li = document.createElement('li');
+          const time = new Date(a.created_at).toLocaleString('id-ID');
+          li.innerHTML = `<div>${escapeHtml(a.action)}</div><div class="time">${escapeHtml(time)}</div>`;
+          activityList.appendChild(li);
+        });
+      } catch(e){
+        console.error("Gagal loadActivity:", e);
+      }
+    }
+
+    /* -------------------- PROFILE -------------------- */
+    function makeTag(t){ const d=document.createElement("div"); d.className="tag"; d.textContent=t; return d; }
+    function parseSkillsField(f){ if(!f) return []; if(Array.isArray(f)) return f; return String(f).split(",").map(s=>s.trim()).filter(Boolean); }
+
+    async function loadProfile(uid){
+      try{
+        const { data, error } = await supabase.from("profiles").select("*").eq("id", uid).single();
+        if (error && !data) return console.warn('No profile found', error);
+        if (data) renderProfile(data);
+      }catch(e){
+        console.error('loadProfile', e);
+      }
+    }
+
+    function renderProfile(p){
+      const fullName = p.full_name || "Tanpa Nama";
+      profileName.textContent = fullName;
+      greetName.textContent = fullName.split(" ")[0] || fullName;
+      rightName.textContent = fullName;
+
+      profileRole.textContent = p.university ? `${p.university} • ${p.major||""}` : "";
+
+      const bio = p.bio || "Belum menambahkan bio";
+      if(profileBio) profileBio.textContent = bio;
+      if(rightBio) rightBio.textContent = bio;
+
+      if(homeIntro) homeIntro.textContent = `Halo ${fullName.split(" ")[0]}, selamat datang di dashboardmu.`;
+
+      let avatarSrc = "";
+      if (p.profile_picture){
+        if(p.profile_picture.startsWith("http")) avatarSrc = p.profile_picture;
+        else {
+          try{
+            const res = supabase.storage.from("profile_pictures").getPublicUrl(p.profile_picture);
+            avatarSrc = res?.data?.publicUrl || "";
+          }catch(e){ avatarSrc = ""; }
+        }
+      }
+      avatarImg.src = avatarSrc || "assets/default-profile.png";
+      headerAvatar.src = avatarSrc || "assets/default-profile.png";
+
+      if(techSkills) techSkills.innerHTML = "";
+      if(designSkills) designSkills.innerHTML = "";
+      if(softSkills) softSkills.innerHTML = "";
+      if(rightSkills) rightSkills.innerHTML = "";
+      if(showcaseSkills) showcaseSkills.innerHTML = "";
+
+      const hard = parseSkillsField(p.hard_skills);
+      const soft = parseSkillsField(p.soft_skills);
+
+      const designKeywords = ["ui","ux","figma","wireframe","prototype","design"];
+      const tech = [], design = [];
+      hard.forEach(s=>{
+        if(designKeywords.some(k=>s.toLowerCase().includes(k))) design.push(s); else tech.push(s);
+      });
+
+      tech.forEach(s=> techSkills.appendChild(makeTag(s)));
+      design.forEach(s=> designSkills.appendChild(makeTag(s)));
+      soft.forEach(s=> softSkills.appendChild(makeTag(s)));
+      [...hard,...soft].slice(0,6).forEach(s=> rightSkills.appendChild(makeTag(s)));
+
+      // showcase skills preview
+      const groups = [{title:'Technical',items:tech},{title:'Design',items:design},{title:'Soft',items:soft}];
+      groups.forEach(g=>{
+        if(!g.items.length) return;
+        const box = document.createElement('div');
+        box.style = "background:#fff;padding:12px;border-radius:10px;border:1px solid #eee;min-width:200px";
+        box.innerHTML = `<strong>${escapeHtml(g.title)} Skills</strong>`;
+        const container = document.createElement('div');
+        container.style = "margin-top:8px;display:flex;gap:8px;flex-wrap:wrap";
+        g.items.forEach(x=> container.appendChild(makeTag(x)));
+        box.appendChild(container);
+        showcaseSkills.appendChild(box);
+      });
+
+      // recent activity from profile (if present) - but main activity list comes from activity_logs table
+      if(p.recent_activity && p.recent_activity.length){
+        // optionally display them as first items in activityList
+      }
+
+      // progress
+      let done = 0;
+      if (p.profile_picture) done += 25;
+      if (p.full_name) done += 25;
+      if (hard.length || soft.length) done += 25;
+      if (p.showcase_items?.length) done += 25;
+      progressBar.style.width = done + "%";
+      profilePercent.textContent = done + "% Selesai";
+    }
+
+    /* -------------------- PROJECTS/SHOWCASE -------------------- */
+    async function loadProjects(){
+      try{
+        const uid = (await supabase.auth.getUser()).data.user.id;
+        const { data, error } = await supabase
+          .from("projects")
+          .select("*")
+          .eq("user_id", uid)
+          .order("created_at",{ascending:false});
+
+        projectsList.innerHTML = "";
+        if (!data || data.length===0){
+          projectsList.innerHTML = "<small>No projects yet</small>";
+        } else {
+          data.forEach(p=>{
+            const div = document.createElement("div");
+            div.style = "padding:10px;border-radius:8px;background:#fff;border:1px solid #eef2f7;display:flex;justify-content:space-between;align-items:center";
+            div.innerHTML = `
+              <div>
+                <strong>${escapeHtml(p.title)}</strong> — ${escapeHtml(p.project_type)}<br>
+                <small style="color:var(--gray)">${escapeHtml(p.description||"")}</small><br>
+                ${p.demo_link?`<a href="${escapeAttr(p.demo_link)}" target="_blank">${escapeHtml(p.demo_link)}</a>`:""}
+              </div>
+              <button class="del-btn" style="padding:6px 8px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer">Delete</button>
+            `;
+            div.querySelector(".del-btn").onclick = async ()=>{
+              if(confirm("Delete this project?")){
+                await supabase.from("projects").delete().eq('id', p.id);
+                await loadProjects();
+                await loadShowcase();
+                // log delete
+                await logActivity(uid, `Menghapus project "${p.title}"`);
+              }
+            };
+            projectsList.appendChild(div);
+          });
+        }
+        await loadShowcase();
+      }catch(e){
+        console.error('loadProjects', e);
+        projectsList.innerHTML = "<small>Error loading projects</small>";
+      }
+    }
+
+    async function loadShowcase(){
+      try{
+        const uid = (await supabase.auth.getUser()).data.user.id;
+        const { data } = await supabase
+          .from("projects")
+          .select("*")
+          .eq("user_id", uid)
+          .order("created_at", { ascending: false });
+
+        portfolioGrid.innerHTML = "";
+        if (!data || data.length === 0){
+          portfolioGrid.innerHTML = "<p style='color:gray'>Belum ada project</p>";
+          return;
+        }
+
+        data.forEach(p=>{
+          const item = document.createElement('div');
+          item.className = 'portfolio-item';
+          let thumbHtml = '';
+          if (p.file_path){
+            try{
+              const res = supabase.storage.from('projects_files').getPublicUrl(p.file_path);
+              const url = res?.data?.publicUrl || '';
+              if (url) thumbHtml = `<div class="portfolio-thumb" style="background-image:url('${escapeAttr(url)}')"></div>`;
+            }catch(e){ thumbHtml = ''; }
+          }
+          item.innerHTML = `
+            ${thumbHtml}
+            <div class="portfolio-title">${escapeHtml(p.title)}</div>
+            <div class="portfolio-desc">${escapeHtml(p.description || '')}</div>
+            <div style="margin-top:auto;color:var(--gray);font-size:13px">${escapeHtml(p.project_type || '')} ${p.demo_link?` • <a href="${escapeAttr(p.demo_link)}" target="_blank">Demo</a>`:''}</div>
+          `;
+          portfolioGrid.appendChild(item);
+        });
+      }catch(e){
+        console.error('loadShowcase', e);
+        portfolioGrid.innerHTML = "<p style='color:gray'>Error loading showcase</p>";
+      }
+    }
+
+    /* -------------------- ADD PROJECT -------------------- */
+    addProjBtn.onclick = async ()=>{
+      const title = proj_title.value.trim();
+      if(!title) return alert("Project title required");
+
+      const uid = (await supabase.auth.getUser()).data.user.id;
+      let filePath = null;
+      if(proj_file.files && proj_file.files[0]){
+        const f = proj_file.files[0];
+        const name = uid + "_" + Date.now()+"_"+f.name.replace(/\s+/g,"_");
+        const { data, error } = await supabase.storage.from("projects_files").upload(name, f);
+        if(error){
+          console.error('upload err', error);
+          alert("Gagal upload file: "+ (error?.message || error));
+          return;
+        }
+        filePath = data.path;
+      }
+
+      const payload = {
+        title,
+        description: proj_desc.value.trim(),
+        demo_link: proj_demo.value.trim(),
+        project_type: proj_type.value,
+        file_path: filePath,
+        user_id: uid,
+        created_at: new Date().toISOString()
+      };
+
+      const { error } = await supabase.from("projects").insert([payload]);
+      if(error){
+        console.error('insert err', error);
+        alert("Gagal menyimpan project: "+ (error?.message || error));
         return;
       }
-      profileArea.innerHTML = `
-        <strong style="font-size:18px">${p.full_name || '(no name)'}</strong>
-        <div class="small">${p.email || ''}</div>
-        <div style="margin-top:8px">${p.bio || ''}</div>
-        <div style="margin-top:8px">
-          <div class="small">Skills:</div>
-          ${(p.skills || []).map(s=>`<span class="chip">${s}</span>`).join(' ')}
-        </div>
-        <div style="margin-top:6px">
-          <div class="small">Interests:</div>
-          ${(p.interests || []).map(i=>`<span class="chip">${i}</span>`).join(' ')}
-        </div>
-      `;
-      // fill quick fields
-      quick_name.value = p.full_name || '';
-      quick_phone.value = p.phone || '';
-      quick_bio.value = p.bio || '';
-      quick_skills.value = (p.skills || []).join(', ');
-      quick_interests.value = (p.interests || []).join(', ');
-    }
 
-    // logout
-    logoutBtn.addEventListener('click', async () => {
-      await logout();
-      window.location.href = 'index.html';
-    });
+      // log activity
+      await logActivity(uid, `Menambahkan project "${title}"`);
 
-    // ---------- PROJECTS ----------
-    async function loadProjects(){
-      const list = await getProjects();
-      const el = document.getElementById('projectsList');
-      if (!list || list.length === 0) { el.innerHTML = '<i>No projects</i>'; return; }
-      el.innerHTML = list.map(p => `
-        <div class="item-card">
-          <div>
-            <strong>${p.title}</strong><br>
-            <small>${p.project_type || ''} • ${new Date(p.created_at).toLocaleDateString()}</small>
-            <div style="margin-top:6px">${p.description || ''}</div>
-            ${p.demo_link ? `<div style="margin-top:6px"><a href="${p.demo_link}" target="_blank">${p.demo_link}</a></div>` : ''}
-          </div>
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <button onclick="window.editProject('${p.id}')" class="neu-btn" style="width:110px">Edit</button>
-            <button onclick="window.removeProject('${p.id}')" class="delete-btn" style="width:110px">Delete</button>
-          </div>
-        </div>
-      `).join('');
-    }
+      proj_title.value = "";
+      proj_desc.value = "";
+      proj_demo.value = "";
+      proj_type.value = "Design";
+      proj_file.value = "";
 
-    window.removeProject = async (id) => {
-      if (!confirm('Hapus project?')) return;
-      const r = await deleteProject(id);
-      if (!r.success) return alert('Error: '+ r.error);
       await loadProjects();
+      await loadShowcase();
     };
 
-    window.editProject = async (id) => {
-      const title = prompt('New title');
-      if (!title) return;
-      const desc = prompt('New description', '');
-      const type = prompt('Type (Final Project/Weekly/Daily/Case Study/Group Project)', 'Weekly');
-      const res = await updateProject(id, title, desc, type);
-      if (!res.success) return alert('Error: ' + res.error);
-      await loadProjects();
+    clearProjBtn.onclick = ()=>{
+      proj_title.value = "";
+      proj_desc.value = "";
+      proj_demo.value = "";
+      proj_type.value = "Design";
+      proj_file.value = "";
     };
 
-    addProjBtn.addEventListener('click', async () => {
-      const title = proj_title.value.trim();
-      if (!title) return alert('Masukkan judul project');
-      const res = await addProject(title, proj_desc.value, proj_type.value, proj_demo.value);
-      if (!res.success) return alert('Error: ' + res.error);
-      proj_title.value=''; proj_desc.value=''; proj_demo.value='';
-      await loadProjects();
+    /* -------------------- CV POPUP HANDLERS -------------------- */
+    openCvPopup && openCvPopup.addEventListener('click', async ()=>{
+      premiumPopup.style.display = 'flex';
+      // log opening popup
+      try { const uid = (await supabase.auth.getUser()).data.user.id; if(uid) await logActivity(uid, "Membuka popup Generate CV"); } catch(e){}
     });
 
-    clearProjBtn.addEventListener('click', () => {
-      proj_title.value=''; proj_desc.value=''; proj_demo.value='';
+    closePopup && closePopup.addEventListener('click', ()=>{ premiumPopup.style.display = 'none'; });
+    premiumPopup && premiumPopup.addEventListener('click', (e)=>{ if(e.target === premiumPopup) premiumPopup.style.display = 'none'; });
+
+    planEls.forEach(el=>{
+      el.addEventListener('click', ()=>{ planEls.forEach(x=>x.classList.remove('selected')); el.classList.add('selected'); selectedPlan = el.dataset.plan; });
     });
 
-    // ---------- CERTIFICATES ----------
-    async function loadCerts(){
-      const list = await getCertificates();
-      const el = document.getElementById('certsList');
-      if (!list || list.length === 0) { el.innerHTML = '<i>No certificates</i>'; return; }
-      el.innerHTML = list.map(c=>`
-        <div class="item-card">
-          <div>
-            <strong>${c.name}</strong><br>
-            <small>${c.issuer || ''} ${c.issued_date ? ' • '+c.issued_date : ''}</small>
-            ${c.file_url ? `<div style="margin-top:6px"><a href="${c.file_url}" target="_blank">View file</a></div>` : ''}
-          </div>
-          <div>
-            <button class="delete-btn" onclick="window.removeCert('${c.id}')">Delete</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    window.removeCert = async (id) => {
-      if (!confirm('Hapus sertifikat?')) return;
-      const r = await deleteCertificate(id);
-      if (!r.success) return alert('Error: ' + r.error);
-      await loadCerts();
-    };
-
-    addCertBtn.addEventListener('click', async () => {
-      if (!cert_name.value.trim()) return alert('Nama sertifikat dibutuhkan');
-      const res = await addCertificate(cert_name.value, cert_issuer.value || null, cert_date.value || null, cert_file.value || null);
-      if (!res.success) return alert('Error: ' + res.error);
-      cert_name.value=''; cert_issuer.value=''; cert_date.value=''; cert_file.value='';
-      await loadCerts();
+    confirmPay && confirmPay.addEventListener('click', async ()=>{
+      premiumPopup.style.display = 'none';
+      const u = (await supabase.auth.getUser()).data.user;
+      if(u && u.id) await logActivity(u.id, `Memilih paket CV: ${selectedPlan}`);
+      alert('(Demo) Lanjutkan ke pembayaran — integrasi gateway pembayaran belum terpasang.');
     });
 
-    // ---------- ASSESSMENTS ----------
-    async function loadAssess(){
-      const list = await getAssessments();
-      const el = document.getElementById('assessList');
-      if (!list || list.length===0) { el.innerHTML = '<i>No assessments</i>'; return; }
-      el.innerHTML = list.map(a=>`
-        <div class="item-card">
-          <div>
-            <strong>${a.skill_name}</strong><br>
-            <small>Score: ${a.score} ${a.evaluator ? ' • '+a.evaluator : ''}</small>
-            <div style="margin-top:6px">${a.notes || ''}</div>
-          </div>
-          <div>
-            <button class="delete-btn" onclick="window.removeAssess('${a.id}')">Delete</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    window.removeAssess = async (id) => {
-      if (!confirm('Delete assessment?')) return;
-      const r = await deleteAssessment(id);
-      if (!r.success) return alert('Error: '+r.error);
-      await loadAssess();
-    };
-
-    addAssessBtn.addEventListener('click', async () => {
-      const skill = assess_skill.value.trim();
-      const score = parseInt(assess_score.value,10);
-      if (!skill || isNaN(score)) return alert('Isi skill dan score (angka)');
-      const res = await addAssessment(skill, score, assess_eval.value || '');
-      if (!res.success) return alert('Error: ' + res.error);
-      assess_skill.value=''; assess_score.value=''; assess_eval.value='';
-      await loadAssess();
-    });
-
-    // ---------- QUICK PROFILE SAVE ----------
-    saveQuickProfile.addEventListener('click', async () => {
-      const skillsArr = quick_skills.value.split(',').map(s=>s.trim()).filter(Boolean);
-      const interestsArr = quick_interests.value.split(',').map(s=>s.trim()).filter(Boolean);
-      const r = await updateProfile(quick_name.value, quick_phone.value, quick_bio.value, skillsArr, interestsArr);
-      if (!r.success) return alert('Error: ' + r.error);
-      await loadProfile();
-      alert('Profile updated');
-    });
-
-    refreshBtn.addEventListener('click', async () => {
-      await loadProfile(); await loadProjects(); await loadCerts(); await loadAssess();
-    });
-
-    // ---------- SHARE LINK ----------
-    createShareBtn.addEventListener('click', async () => {
-      const res = await createPortfolioLink();
-      if (!res.success) return alert('Error: ' + res.error);
-      shareLink.textContent = res.url;
-      // show copy prompt
-      if (confirm('Share link created. Copy to clipboard?')) {
-        navigator.clipboard.writeText(res.url).catch(()=>{});
-        alert('Link copied to clipboard (if browser allowed).');
+    /* -------------------- AUTH + BOOTSTRAP -------------------- */
+    async function bootstrap(){
+      // check auth user
+      const { data } = await supabase.auth.getUser();
+      const user = data?.user;
+      if(!user){
+        // not signed in
+        window.location.href = "/index.html";
+        return;
       }
-    });
+      const uid = user.id;
 
-    // ---------- CV ----------
-    generateCv.addEventListener('click', async () => {
-      const r = await generateCV();
-      if (!r.success) alert('Failed: ' + (r.error || 'unknown'));
-    });
+      // load data
+      await loadProfile(uid);
+      await loadProjects();
+      await loadShowcase();
+      await loadActivity(uid);
 
-    // initial load
-    await loadProfile();
-    await loadProjects();
-    await loadCerts();
-    await loadAssess();
+      // setup event logs for navigation and actions (non-destructive)
+      setupActivityLogging(uid);
+    }
+
+    function setupActivityLogging(uid){
+      try{
+        navHomeBtn.addEventListener("click", ()=> logActivity(uid, "Membuka halaman Home"));
+        navProjectsBtn.addEventListener("click", ()=> logActivity(uid, "Membuka halaman Projects"));
+        navSkillBtn.addEventListener("click", ()=> logActivity(uid, "Membuka halaman Skill Passport"));
+        navShowcaseBtn.addEventListener("click", ()=> logActivity(uid, "Membuka halaman Showcase"));
+
+        addProjBtn.addEventListener("click", ()=> logActivity(uid, "Menekan tombol Submit Project (UI)"));
+        openCvPopup && openCvPopup.addEventListener("click", ()=> logActivity(uid, "Membuka popup Generate CV (UI)"));
+
+        document.getElementById("btn-logout").addEventListener("click", ()=> { logActivity(uid, "Logout (clicked)"); });
+
+        // Optional: log page load
+        logActivity(uid, "Masuk ke Dashboard");
+      }catch(e){
+        console.error('setupActivityLogging', e);
+      }
+    }
+
+    // Run bootstrap
+    bootstrap();
+
+    // expose generateCV for custom integration if wanted later
+    window.generateCV = async function(plan){
+      // placeholder: implement CV generation logic (call serverless function or backend)
+      const { data } = await supabase.auth.getUser();
+      const uid = data?.user?.id;
+      if(uid) await logActivity(uid, `Meminta generate CV paket ${plan}`);
+      // return fake promise
+      return Promise.resolve({ ok:true });
+    };
 
   </script>
 </body>
